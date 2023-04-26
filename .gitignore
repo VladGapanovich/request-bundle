@@ -1,0 +1,12 @@
+.git
+/vendor/
+
+###> phpunit ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< phpunit ###
+
+###> friendsofphp/php-cs-fixer ###
+.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
