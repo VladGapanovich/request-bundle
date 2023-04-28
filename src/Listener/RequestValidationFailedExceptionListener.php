@@ -25,6 +25,6 @@ final class RequestValidationFailedExceptionListener
             return;
         }
 
-        $event->setResponse(new JsonResponse($this->serializer->serialize($exception), Response::HTTP_BAD_REQUEST));
+        $event->setResponse(new JsonResponse($this->serializer->serialize($exception), $exception->statusCode()));
     }
 }

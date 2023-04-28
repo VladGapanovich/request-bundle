@@ -9,7 +9,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 final class PropertyAccessor
 {
     /**
-     * @param array<int|string, mixed> $data
+     * @param array<array-key, mixed> $data
      */
     public static function get(array $data, string $propertyPath): mixed
     {

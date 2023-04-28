@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Jrm\RequestBundle\DependencyInjection;
 
-use Jrm\RequestBundle\Caster\Caster;
-use Jrm\RequestBundle\DependencyInjection\Compiler\CasterCompilerPass;
-use Jrm\RequestBundle\DependencyInjection\Compiler\ParameterResolverCompilerPass;
-use Jrm\RequestBundle\Parameter\ParameterResolver;
-use LogicException;
-use ReflectionClass;
+use Jrm\RequestBundle\Attribute\Internal\InternalValueResolver;
+use Jrm\RequestBundle\Attribute\ValueResolver;
+use Jrm\RequestBundle\DependencyInjection\Compiler\InternalValueResolverCompilerPass;
+use Jrm\RequestBundle\DependencyInjection\Compiler\ValueResolverCompilerPass;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -28,34 +26,9 @@ final class JrmRequestExtension extends Extension
         );
         $loader->load('services.php');
 
-        $container->registerForAutoconfiguration(Caster::class)
-            ->addTag(CasterCompilerPass::CASTER_TAG);
-        $container->registerForAutoconfiguration(ParameterResolver::class)
-            ->addTag(ParameterResolverCompilerPass::PARAMETER_RESOLVER_TAG);
-
-        $this->setAvailableCasterTypes($container);
-    }
-
-    private function setAvailableCasterTypes(ContainerBuilder $container): void
-    {
-        $serviceIds = array_keys($container->findTaggedServiceIds(CasterCompilerPass::CASTER_TAG));
-        $types = array_map(
-            static function (string $serviceId) use ($container): string {
-                $class = $container->getDefinition($serviceId)->getClass();
-
-                if (
-                    $class !== null
-                    && class_exists($class)
-                    && (new ReflectionClass($class))->isSubclassOf(Caster::class)
-                ) {
-                    return $class::getType();
-                }
-
-                throw new LogicException(sprintf('The tag "%s" should to have only classes, that implement %s interface', CasterCompilerPass::CASTER_TAG, Caster::class));
-            },
-            $serviceIds,
-        );
-
-        $container->setParameter('jrm.request.caster.available_types', $types);
+        $container->registerForAutoconfiguration(InternalValueResolver::class)
+            ->addTag(InternalValueResolverCompilerPass::INTERNAL_VALUE_RESOLVER_TAG);
+        $container->registerForAutoconfiguration(ValueResolver::class)
+            ->addTag(ValueResolverCompilerPass::VALUE_RESOLVER_TAG);
     }
 }

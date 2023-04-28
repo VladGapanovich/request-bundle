@@ -4,15 +4,25 @@ declare(strict_types=1);
 
 namespace Jrm\RequestBundle\Factory;
 
-use Jrm\RequestBundle\Service\ParameterResolver;
-use ReflectionClass;
-use ReflectionParameter;
-use Symfony\Component\HttpFoundation\Request;
+use Jrm\RequestBundle\Exception\RequestValidationFailedException;
+use Jrm\RequestBundle\MapRequest;
+use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class RequestFactory
 {
+    private const DEFAULT_CONTEXT = [
+        AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => false,
+        DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true,
+    ];
+
     public function __construct(
-        private ParameterResolver $parameterResolver,
+        private DenormalizerInterface $serializer,
+        private InvalidTypeConstraintViolationFactory $invalidTypeConstraintViolationFactory,
+        private ?ValidatorInterface $validator = null,
     ) {
     }
 
@@ -20,23 +30,54 @@ final class RequestFactory
      * @template T of object
      *
      * @param class-string<T> $className
+     * @param array<array-key, mixed> $requestData
      *
      * @return T
      */
-    public function create(string $className, Request $symfonyRequest): object
+    public function create(MapRequest $attribute, string $className, array $requestData): object
     {
-        $class = new ReflectionClass($className);
-        $constructor = $class->getConstructor();
+        if ($this->validator instanceof ValidatorInterface) {
+            $violations = new ConstraintViolationList();
 
-        if ($constructor === null) {
-            return $class->newInstance();
+            try {
+                $payload = $this->serializer->denormalize(
+                    $requestData,
+                    $className,
+                    null,
+                    self::DEFAULT_CONTEXT + $attribute->serializationContext,
+                );
+            } catch (PartialDenormalizationException $exception) {
+                foreach ($exception->getErrors() as $error) {
+                    $violations->add($this->invalidTypeConstraintViolationFactory->create($error));
+                }
+
+                $payload = $exception->getData();
+            }
+
+            if ($payload instanceof $className) {
+                $violations->addAll($this->validator->validate($payload, null, $attribute->validationGroups ?? null));
+            }
+
+            if (\count($violations) > 0) {
+                throw new RequestValidationFailedException(422,'Request validation failed.', $violations);
+            }
+        } else {
+            try {
+                $payload = $this->serializer->denormalize(
+                    $requestData,
+                    $className,
+                    null,
+                    self::DEFAULT_CONTEXT + $attribute->serializationContext,
+                );
+            } catch (PartialDenormalizationException $exception) {
+                throw new RequestValidationFailedException(422, implode(PHP_EOL, array_map(static fn ($exception) => $exception->getMessage(), $exception->getErrors())), null, $exception);
+            }
         }
 
-        $parameters = \array_map(
-            fn (ReflectionParameter $parameter): mixed => $this->parameterResolver->resolve($symfonyRequest, $parameter),
-            $constructor->getParameters(),
-        );
+        if (!$payload instanceof $className) {
+            throw new RequestValidationFailedException(415,'Request payload contains invalid data.');
+        }
 
-        return $class->newInstanceArgs($parameters);
+        return $payload;
     }
 }

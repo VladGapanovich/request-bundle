@@ -25,12 +25,11 @@ return [
 
 Create request using some sources of data:
 
-* `Body` (take JSON data from request body)
+* `Body` (take data from request body or form)
 * `Collection` (Needed for hydrate of collection some sub objects)
 * `Cookie` (take data from cookies)
 * `EmbeddableRequest` (Needed for hydrate of some sub object)
 * `File` (take data from files)
-* `Form` (take data from form data)
 * `Header` (take data from headers)
 * `PathAttribute` (take data from path attributes)
 * `Query` (take data from query string)
@@ -39,14 +38,14 @@ Create request using some sources of data:
 
 ```php
 use Jrm\RequestBundle\Model\Source;
-use Jrm\RequestBundle\Parameter\Collection;
-use Jrm\RequestBundle\Parameter\Header;
-use Jrm\RequestBundle\Parameter\PathAttribute;
+use Jrm\RequestBundle\Attribute\Collection;
+use Jrm\RequestBundle\Attribute\Header;
+use Jrm\RequestBundle\Attribute\PathAttribute;
 
 final class MyRequest
 {
     public function __construct(
-        #[PathAttribute('id')]
+        #[PathAttribute()]
         public readonly int $id,
         #[Body('pos_id')]
         private readonly string $posId,
@@ -102,7 +101,7 @@ Your data, for example request body, may have some nesting.
 You can pass path to this filed.
 
 ```php
-use Jrm\RequestBundle\Parameter\Body;
+use Jrm\RequestBundle\Attribute\Body;
 
 final class MyRequest
 {
@@ -118,10 +117,11 @@ final class MyRequest
 
 ## Validation
 
-You can validate your request by symfony constraints, if validation will be failed, Jrm\RequestBundle\Listener\RequestValidationFailedExceptionListener will send response with all failed fields and error messages for them
+You can validate your request by symfony constraints, if validation will be failed,
+Jrm\RequestBundle\Listener\RequestValidationFailedExceptionListener will send response with all failed fields and error messages for them
 
 ```php
-use Jrm\RequestBundle\Parameter\Query;
+use Jrm\RequestBundle\Attribute\Query;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class MyRequest
@@ -129,7 +129,7 @@ final class MyRequest
     public function __construct(
         #[Assert\NotBlank]
         #[Query('some_field')]
-        public readonly string $clientIp,
+        public readonly string $field,
     ) {
     }
 }
@@ -151,17 +151,18 @@ final class MyRequest
 
 ## Collection
 
-In some cases you may need to hydrate collection of data, you can use Collection attribute and "describe" this collection items as a separate object or scalar.
+In some cases you may need to hydrate collection of data, you can use Collection attribute and "describe" this collection
+items as a separate object.
 
 ```php
-use Jrm\RequestBundle\Parameter\Item;
+use Jrm\RequestBundle\Attribute\Internal\Item;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class MyCollectionItem
 {
     public function __construct(
         #[Assert\Uuid]
-        #[Item('id')]
+        #[Item()]
         public readonly string $id,
     ) {
     }
@@ -170,7 +171,7 @@ final class MyCollectionItem
 
 ```php
 use Jrm\RequestBundle\Model\Source;
-use Jrm\RequestBundle\Parameter\Collection;
+use Jrm\RequestBundle\Attribute\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class MyRequest
@@ -188,7 +189,8 @@ final class MyRequest
 }
 ```
 
-> **_NOTE:_** You should use #[Assert\Valid] for your collection as in the example above for validating your collection, because without this constraint, symfony validator ignore it
+> **_NOTE:_** You should use #[Assert\Valid] for your collection as in the example above for validating your collection,
+> because without this constraint, symfony validator ignore it
 
 ## Custom Resolver
 
@@ -197,8 +199,10 @@ For this you need to create:
 
 ### Parameter
 ```php
+use Jrm\RequestBundle\Attribute\RequestAttribute;
+
 #[Attribute(Attribute::TARGET_PARAMETER, Attribute::TARGET_PROPERTY)]
-final class UserId implements ParameterInterface
+final class UserId implements RequestAttribute
 {
     /**
      * @return class-string<UserIdResolver>
@@ -216,12 +220,13 @@ final class UserId implements ParameterInterface
 use App\Domain\User\Exception\UserNotAuthorizedException;
 use App\Domain\User\Model\User;
 use Jrm\RequestBundle\Exception\UnexpectedAttributeException;
-use Jrm\RequestBundle\Parameter\RequestAttribute;
-use Jrm\RequestBundle\Parameter\ParameterResolver;
+use Jrm\RequestBundle\Model\Metadata;
+use Jrm\RequestBundle\Attribute\RequestAttribute;
+use Jrm\RequestBundle\Attribute\ValueResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-final class UserIdResolver implements ParameterResolver
+final class UserIdResolver implements ValueResolver
 {
     public function __construct(
         private readonly TokenStorageInterface $tokenStorage,
@@ -230,7 +235,7 @@ final class UserIdResolver implements ParameterResolver
 
     public function resolve(
         Request $request,
-        ReflectionParameter $parameter,
+        Metadata $metadata,
         RequestAttribute $attribute,
     ): int {
         if (!$attribute instanceof UserId) {
@@ -240,14 +245,14 @@ final class UserIdResolver implements ParameterResolver
         try {
             $user = $this->tokenStorage->getToken()?->getUser();
 
-            if (null === $user) {
-                throw UserNotAuthorizedException::create();
+            if ($user === null) {
+                throw new UserNotAuthorizedException();
             }
     
             return $user->id();
         } catch (Throwable $throwable) {
             if ($parameter->isOptional()) {
-                return $parameter->getDefaultValue();
+                return $parameter->defaultValue();
             }
 
             throw $throwable;
@@ -256,55 +261,11 @@ final class UserIdResolver implements ParameterResolver
 }
 ```
 
-## Custom Caster
-
-You can create your custom caster for casting value to anything<br>
-For this you need to create:
-
-### Caster
-
-```php
-use App\Domain\User\Model\UserId;
-use Jrm\RequestBundle\Caster\Caster;
-use Jrm\RequestBundle\Exception\InvalidTypeException;
-use Jrm\RequestBundle\Parameter\RequestAttribute;
-
-final class UserIdCaster implements Caster
-{
-    /**
-     * @return class-string<UserId>
-     */
-    public static function getType(): string
-    {
-        return UserId::class;
-    }
-
-    public function cast(mixed $value, RequestAttribute $attribute, bool $allowsNull): ?UserId
-    {
-        if (null === $value && $allowsNull) {
-            return null;
-        }
-
-        $type = get_debug_type($value);
-        $value = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-
-        if (is_int($value)) {
-            return new UserId($value);
-        }
-
-        throw new InvalidTypeException(UserId::class, $type);
-    }
-}
-```
-
 ## Plans:
 
-* Make the validator optional
-* Add context and insert it instead of `RequestAttribute` and `type`
-* Make Attribute's `name` or `path` nullable and use parameter name if it is null.
-* Make hydration by class properties
-* Make data validation before passing it as `construct` parameters
 * Make automation conversion to Open Api Doc
 * Make the `Item` attribute optional
 * Add validation tests that all requests are valid classes with supported attributes and types
-* Add support of intersection and union types
+* Fix issue with validation, when your request haven't any required params
+* Add bundle to symfony flex
+* Add more unit and integration tests

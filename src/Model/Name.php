@@ -26,4 +26,9 @@ final class Name
     {
         return $this->value;
     }
+
+    public function valueAsArrayKey(): string
+    {
+        return sprintf('[%s]', $this->value);
+    }
 }

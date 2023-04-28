@@ -1,10 +1,12 @@
 .git
+/var/
 /vendor/
 
 ###> phpunit ###
 .phpunit
 .phpunit.result.cache
 /phpunit.xml
+./tests/Fixture/var/
 ###< phpunit ###
 
 ###> friendsofphp/php-cs-fixer ###

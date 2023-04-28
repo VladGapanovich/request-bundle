@@ -11,8 +11,8 @@ return static function (ContainerConfigurator $container) {
     $container->services()
         ->set('jrm.request.argument_resolver.request_resolver', RequestResolver::class)
             ->args([
+                '$requestDataCollector' => service('jrm.request.service.request_data_collector'),
                 '$requestFactory' => service('jrm.request.factory.request_factory'),
-                '$requestValidator' => service('jrm.request.validator.request_validator'),
             ])
             ->tag('controller.argument_value_resolver', ['priority' => 50]);
 };

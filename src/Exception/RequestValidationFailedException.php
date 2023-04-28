@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace Jrm\RequestBundle\Exception;
 
-use Jrm\RequestBundle\Validator\Violation\Violation;
 use RuntimeException;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class RequestValidationFailedException extends RuntimeException implements RequestBundleException
 {
-    /**
-     * @param Violation[] $violations
-     */
-    public function __construct(private array $violations)
-    {
-        parent::__construct('Request validation failed.');
+    public function __construct(
+        private int $statusCode,
+        string $message,
+        private ?ConstraintViolationList $violations = null,
+        ?\Throwable $previous = null,
+    ) {
+        parent::__construct($message, 0, $previous);
     }
 
-    /**
-     * @return Violation[]
-     */
-    public function violations(): array
+    public function statusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function violations(): ?ConstraintViolationList
     {
         return $this->violations;
     }

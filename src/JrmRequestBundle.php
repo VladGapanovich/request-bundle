@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jrm\RequestBundle;
 
-use Jrm\RequestBundle\DependencyInjection\Compiler\CasterCompilerPass;
-use Jrm\RequestBundle\DependencyInjection\Compiler\ParameterResolverCompilerPass;
+use Jrm\RequestBundle\DependencyInjection\Compiler\InternalValueResolverCompilerPass;
+use Jrm\RequestBundle\DependencyInjection\Compiler\ValueResolverCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -15,8 +15,8 @@ final class JrmRequestBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new CasterCompilerPass());
-        $container->addCompilerPass(new ParameterResolverCompilerPass());
+        $container->addCompilerPass(new InternalValueResolverCompilerPass());
+        $container->addCompilerPass(new ValueResolverCompilerPass());
     }
 
     public function getPath(): string

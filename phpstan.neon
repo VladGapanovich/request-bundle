@@ -3,3 +3,13 @@ parameters:
     paths:
         - src
         - tests
+
+    ignoreErrors:
+        -
+            message: "#^Cannot call method getName\\(\\) on ReflectionType\\|null\\.$#"
+            count: 1
+            path: src/Attribute/Internal/InternalEmbeddableRequestResolver.php
+        -
+            message: "#^Cannot call method getName\\(\\) on ReflectionType\\|null\\.$#"
+            count: 1
+            path: src/Attribute/EmbeddableRequestResolver.php

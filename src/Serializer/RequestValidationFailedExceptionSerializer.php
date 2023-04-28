@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jrm\RequestBundle\Serializer;
 
 use Jrm\RequestBundle\Exception\RequestValidationFailedException;
-use Jrm\RequestBundle\Validator\Violation\Violation;
+use Symfony\Component\Validator\ConstraintViolation;
 
 final class RequestValidationFailedExceptionSerializer
 {
@@ -14,31 +14,34 @@ final class RequestValidationFailedExceptionSerializer
      */
     public function serialize(RequestValidationFailedException $exception): array
     {
-        return [
-            'message' => $exception->getMessage(),
-            'errors' => array_map(
+        $response = ['message' => $exception->getMessage()];
+
+        if ($exception->violations() !== null) {
+            $response['errors'] = array_map(
                 [$this, 'serializeViolation'],
-                $exception->violations(),
-            ),
-        ];
+                iterator_to_array($exception->violations()),
+            );
+        }
+
+        return $response;
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function serializeViolation(Violation $violation): array
+    private function serializeViolation(ConstraintViolation $violation): array
     {
         $error = [
-            'message' => $violation->message(),
-            'parameters' => $violation->parameters(),
+            'message' => (string) $violation->getMessage(),
+            'parameters' => $violation->getParameters(),
         ];
 
-        if ($violation->code() !== null) {
-            $error['code'] = $violation->code();
+        if ($violation->getCode() !== null) {
+            $error['code'] = $violation->getCode();
         }
 
-        if ($violation->propertyPath() !== null) {
-            $error['property_path'] = $violation->propertyPath();
+        if ($violation->getPropertyPath() !== '') {
+            $error['property_path'] = $violation->getPropertyPath();
         }
 
         return $error;

@@ -10,11 +10,10 @@ final class Source
 {
     public const BODY = 'body';
     public const QUERY = 'query';
-    public const FORM = 'form';
 
     public function __construct(private string $value)
     {
-        if (!in_array($this->value, [self::BODY, self::QUERY, self::FORM], true)) {
+        if (!in_array($this->value, [self::BODY, self::QUERY], true)) {
             throw new InvalidArgumentException(sprintf('Source should be body or query, got: %s', $this->value));
         }
     }
