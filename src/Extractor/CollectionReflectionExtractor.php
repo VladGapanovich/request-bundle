@@ -32,6 +32,10 @@ final class CollectionReflectionExtractor implements PropertyTypeExtractorInterf
         $reflectionProperty = new ReflectionProperty($class, $property);
         $collectionAttributes = $reflectionProperty->getAttributes(Collection::class);
 
+        if (count($collectionAttributes) === 0) {
+            return $types;
+        }
+
         return [new Type(
             Type::BUILTIN_TYPE_ARRAY,
             false,

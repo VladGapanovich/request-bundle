@@ -12,9 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class Product
 {
     public function __construct(
-        #[Assert\Uuid]
-        #[Item]
         public string $id,
+        #[Assert\Count(min: 2)]
+        #[Item]
+        public array $tags,
         #[Assert\Valid]
         #[EmbeddableRequest]
         public Image $image,

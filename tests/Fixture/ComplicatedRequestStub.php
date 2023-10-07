@@ -22,6 +22,9 @@ final class ComplicatedRequestStub
         #[Assert\Length(min: 1)]
         #[Header('Content-Type')]
         public string $contentType,
+        #[Assert\Count(min: 2)]
+        #[Body]
+        public array $tags,
         #[Assert\Length(min: 1)]
         #[Body]
         public string $name,

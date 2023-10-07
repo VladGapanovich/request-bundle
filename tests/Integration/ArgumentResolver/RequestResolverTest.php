@@ -51,8 +51,10 @@ final class RequestResolverTest extends KernelTestCase
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Test name',
+                'tags' => ['tag1', 'tag2'],
                 'product' => [
                     'id' => '39306b99-26e8-49cc-8598-5b4481287c67',
+                    'tags' => ['tag1', 'tag2'],
                     'image' => [
                         'id' => 'eca7af71-442d-4f59-ab89-0ef45b56fcde',
                     ],
@@ -74,13 +76,11 @@ final class RequestResolverTest extends KernelTestCase
             ], JSON_THROW_ON_ERROR),
         );
 
-        $requests = $this->sut->resolve($symfonyRequest, $argumentMetadata);
-        $requests = [...$requests];
-
         $expectedRequest = new ComplicatedRequestStub(
             '25921208-623d-4cf7-a743-0b50a684691d',
             new Product(
                 '39306b99-26e8-49cc-8598-5b4481287c67',
+                ['tag1', 'tag2'],
                 new Image('eca7af71-442d-4f59-ab89-0ef45b56fcde'),
                 [
                     new Ingredient(
@@ -94,6 +94,7 @@ final class RequestResolverTest extends KernelTestCase
                 ],
             ),
             'application/json',
+            ['tag1', 'tag2'],
             'Test name',
             'Bearer token',
         );
