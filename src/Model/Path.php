@@ -6,7 +6,7 @@ namespace Jrm\RequestBundle\Model;
 
 use InvalidArgumentException;
 
-final class Path
+final readonly class Path
 {
     private const PATTERN = '/^(?<firstDot>\.)|(?<squareBrackets>[\[\]])|(?<latDot>\.)$/';
 

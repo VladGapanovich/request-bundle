@@ -15,7 +15,7 @@ use LogicException;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
-final class CollectionResolver implements ValueResolver
+final readonly class CollectionResolver implements ValueResolver
 {
     public function __construct(
         private RequestBodyGetter $requestBodyGetter,

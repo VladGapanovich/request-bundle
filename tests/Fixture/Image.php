@@ -12,7 +12,7 @@ final class Image
     public function __construct(
         #[Assert\Uuid]
         #[Item]
-        private string $id,
+        public string $id,
     ) {
     }
 }

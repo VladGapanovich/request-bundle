@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class RequestFactory
+final readonly class RequestFactory
 {
     private const DEFAULT_CONTEXT = [
         AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => false,
@@ -59,7 +59,7 @@ final class RequestFactory
             }
 
             if (\count($violations) > 0) {
-                throw new RequestValidationFailedException(422,'Request validation failed.', $violations);
+                throw new RequestValidationFailedException(422, 'Request validation failed.', $violations);
             }
         } else {
             try {
@@ -75,7 +75,7 @@ final class RequestFactory
         }
 
         if (!$payload instanceof $className) {
-            throw new RequestValidationFailedException(415,'Request payload contains invalid data.');
+            throw new RequestValidationFailedException(415, 'Request payload contains invalid data.');
         }
 
         return $payload;

@@ -10,7 +10,7 @@ use Jrm\RequestBundle\Resolver\InternalRequestAttributeResolver;
 use ReflectionParameter;
 use ReflectionProperty;
 
-final class InternalItemResolver
+final readonly class InternalItemResolver
 {
     public function __construct(
         private InternalRequestAttributeResolver $internalRequestAttributeResolver,

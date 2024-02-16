@@ -10,7 +10,7 @@ use Jrm\RequestBundle\Model\Name;
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 final class File implements RequestAttribute
 {
-    private ?Name $name;
+    private readonly ?Name $name;
 
     public function __construct(?string $name = null)
     {

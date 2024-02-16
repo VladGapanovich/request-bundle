@@ -6,6 +6,7 @@ namespace Jrm\RequestBundle\Serializer;
 
 use Jrm\RequestBundle\Exception\RequestValidationFailedException;
 use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class RequestValidationFailedExceptionSerializer
 {
@@ -16,9 +17,9 @@ final class RequestValidationFailedExceptionSerializer
     {
         $response = ['message' => $exception->getMessage()];
 
-        if ($exception->violations() !== null) {
+        if ($exception->violations() instanceof ConstraintViolationList) {
             $response['errors'] = array_map(
-                [$this, 'serializeViolation'],
+                fn (ConstraintViolation $violation): array => $this->serializeViolation($violation),
                 iterator_to_array($exception->violations()),
             );
         }

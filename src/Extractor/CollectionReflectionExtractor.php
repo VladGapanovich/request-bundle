@@ -9,7 +9,7 @@ use ReflectionProperty;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
 
-final class CollectionReflectionExtractor implements PropertyTypeExtractorInterface
+final readonly class CollectionReflectionExtractor implements PropertyTypeExtractorInterface
 {
     public function __construct(
         private PropertyTypeExtractorInterface $propertyTypeExtractor,
@@ -32,7 +32,7 @@ final class CollectionReflectionExtractor implements PropertyTypeExtractorInterf
         $reflectionProperty = new ReflectionProperty($class, $property);
         $collectionAttributes = $reflectionProperty->getAttributes(Collection::class);
 
-        if (count($collectionAttributes) === 0) {
+        if ($collectionAttributes === []) {
             return $types;
         }
 

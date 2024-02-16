@@ -6,7 +6,7 @@ namespace Jrm\RequestBundle\Model;
 
 use InvalidArgumentException;
 
-final class Name
+final readonly class Name
 {
     private const INVALID_SYMBOLS_PATTERN = '/[.\[\]]/';
 

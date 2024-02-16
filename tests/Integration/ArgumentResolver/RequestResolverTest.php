@@ -76,6 +76,8 @@ final class RequestResolverTest extends KernelTestCase
             ], JSON_THROW_ON_ERROR),
         );
 
+        $requests = [...$this->sut->resolve($symfonyRequest, $argumentMetadata)];
+
         $expectedRequest = new ComplicatedRequestStub(
             '25921208-623d-4cf7-a743-0b50a684691d',
             new Product(

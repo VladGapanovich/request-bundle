@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Jrm\RequestBundle\Exception;
 
-use Jrm\RequestBundle\Attribute\RequestAttribute;
 use LogicException;
 
 final class UnsupportedTypeException extends LogicException implements RequestBundleException

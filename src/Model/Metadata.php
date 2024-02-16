@@ -6,7 +6,7 @@ namespace Jrm\RequestBundle\Model;
 
 use ReflectionType;
 
-final class Metadata
+final readonly class Metadata
 {
     public function __construct(
         private Name $name,

@@ -18,7 +18,7 @@ use ReflectionType;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
-final class EmbeddableRequestResolver implements ValueResolver
+final readonly class EmbeddableRequestResolver implements ValueResolver
 {
     public function __construct(
         private RequestBodyGetter $requestBodyGetter,

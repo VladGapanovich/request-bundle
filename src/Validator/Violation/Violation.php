@@ -6,7 +6,7 @@ namespace Jrm\RequestBundle\Validator\Violation;
 
 use Stringable;
 
-final class Violation
+final readonly class Violation
 {
     /**
      * @param array<string, mixed> $parameters

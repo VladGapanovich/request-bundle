@@ -6,7 +6,7 @@ namespace Jrm\RequestBundle\Model;
 
 use InvalidArgumentException;
 
-final class Source
+final readonly class Source
 {
     public const BODY = 'body';
     public const QUERY = 'query';

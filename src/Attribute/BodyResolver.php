@@ -11,7 +11,7 @@ use Jrm\RequestBundle\Service\RequestBodyGetter;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
-final class BodyResolver implements ValueResolver
+final readonly class BodyResolver implements ValueResolver
 {
     public function __construct(
         private RequestBodyGetter $requestBodyGetter,

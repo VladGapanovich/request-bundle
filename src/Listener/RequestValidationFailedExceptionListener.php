@@ -7,10 +7,9 @@ namespace Jrm\RequestBundle\Listener;
 use Jrm\RequestBundle\Exception\RequestValidationFailedException;
 use Jrm\RequestBundle\Serializer\RequestValidationFailedExceptionSerializer;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
-final class RequestValidationFailedExceptionListener
+final readonly class RequestValidationFailedExceptionListener
 {
     public function __construct(
         private RequestValidationFailedExceptionSerializer $serializer,
