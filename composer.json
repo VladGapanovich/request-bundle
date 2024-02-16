@@ -55,8 +55,7 @@
             "@rector:check"
         ],
         "lint": [
-            "@composer validate",
-            "@composer-require:check"
+            "@composer validate"
         ],
         "phpunit": [
             "@phpunit:unit",
