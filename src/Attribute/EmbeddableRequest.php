@@ -13,8 +13,8 @@ use Jrm\RequestBundle\Model\Source;
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 final class EmbeddableRequest implements RequestAttribute, InternalRequestAttribute
 {
-    private Source $source;
-    private ?Path $path;
+    private readonly Source $source;
+    private readonly ?Path $path;
 
     public function __construct(
         string $source = Source::BODY,

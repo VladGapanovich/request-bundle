@@ -1,0 +1,78 @@
+name: "Pull Requests CI"
+
+on:
+    pull_request:
+    push:
+        branches:
+            - "main"
+
+jobs:
+    ci:
+        name: "Execute"
+        runs-on: ${{ matrix.operating-system }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                dependencies:
+                    - "lowest"
+                    - "highest"
+                    - "locked"
+                php-version:
+                    - "8.2"
+                    - "8.3"
+                symfony-version:
+                    - "6.4.*"
+                    - "7.0.*"
+                operating-system:
+                    - "ubuntu-latest"
+
+        steps:
+            -   name: Checkout
+                uses: "actions/checkout@v4"
+
+            -   name: Install PHP
+                uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php-version }}"
+                    coverage: pcov
+                    ini-values: memory_limit=-1
+
+            -   name: Restrict Symfony version
+                if: ${{ matrix.dependencies != 'locked' }}
+                run: |
+                    composer global config --no-plugins allow-plugins.symfony/flex true
+                    composer global require --no-progress --no-scripts --no-plugins "symfony/flex:2.4.4"
+                    composer config extra.symfony.require "${{ matrix.symfony-version }}"
+
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v4
+                with:
+                    path: |
+                        ~/.composer/cache
+                        vendor
+                    key: "jrm-request-${{ matrix.php-version }}-symfony-${{ matrix.symfony-version }}-${{ matrix.dependencies }}"
+                    restore-keys: "jrm-request-php-${{ matrix.php-version }}-symfony-${{ matrix.symfony-version }}-${{ matrix.dependencies }}"
+
+            -   name: Install Composer dependencies
+                uses: "ramsey/composer-install@v2"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
+
+            -   name: Lint
+                run: "composer lint"
+
+            -   name: Run PHP CS Fixer
+                if: ${{ matrix.dependencies == 'locked' && matrix.php-version == '8.2' }}
+                run: "composer php-cs-fixer:check"
+
+            -   name: Run PHPStan
+                if: ${{ matrix.dependencies == 'locked' }}
+                run: "composer static-analysis"
+
+            -   name: Run Rector
+                if: ${{ matrix.dependencies == 'locked' && matrix.php-version == '8.2' }}
+                run: "composer rector:check"
+
+            -   name: Test
+                run: "composer phpunit"

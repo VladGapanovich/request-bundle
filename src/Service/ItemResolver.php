@@ -11,7 +11,7 @@ use ReflectionParameter;
 use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Request;
 
-final class ItemResolver
+final readonly class ItemResolver
 {
     public function __construct(
         private RequestAttributeResolver $requestAttributeResolver,

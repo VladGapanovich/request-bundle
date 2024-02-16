@@ -9,10 +9,10 @@ use Jrm\RequestBundle\Factory\RequestFactory;
 use Jrm\RequestBundle\MapRequest;
 use Jrm\RequestBundle\Service\RequestDataCollector;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-final class RequestResolver implements ArgumentValueResolverInterface
+final readonly class RequestResolver implements ValueResolverInterface
 {
     public function __construct(
         private RequestDataCollector $requestDataCollector,

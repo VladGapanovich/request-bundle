@@ -6,10 +6,11 @@ namespace Jrm\RequestBundle\Service;
 
 use ReflectionClass;
 use ReflectionException;
+use ReflectionMethod;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
-final class RequestDataCollector
+final readonly class RequestDataCollector
 {
     public function __construct(
         private ItemResolver $itemResolver,
@@ -28,7 +29,7 @@ final class RequestDataCollector
         $class = new ReflectionClass($className);
         $constructor = $class->getConstructor();
 
-        if ($constructor !== null && count($constructor->getParameters()) > 0) {
+        if ($constructor instanceof ReflectionMethod && $constructor->getParameters() !== []) {
             $parameters = [];
 
             foreach ($constructor->getParameters() as $parameter) {

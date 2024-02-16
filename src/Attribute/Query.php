@@ -10,7 +10,7 @@ use Jrm\RequestBundle\Model\Path;
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 final class Query implements RequestAttribute
 {
-    private ?Path $path;
+    private readonly ?Path $path;
 
     public function __construct(?string $path = null)
     {

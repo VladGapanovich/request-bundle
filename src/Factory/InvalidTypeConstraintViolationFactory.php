@@ -8,7 +8,7 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class InvalidTypeConstraintViolationFactory
+final readonly class InvalidTypeConstraintViolationFactory
 {
     public function __construct(
         private ?TranslatorInterface $translator = null,
@@ -18,7 +18,7 @@ final class InvalidTypeConstraintViolationFactory
     public function create(NotNormalizableValueException $exception): ConstraintViolation
     {
         $trans = $this->translator instanceof TranslatorInterface
-            ? [$this->translator, 'trans']
+            ? fn (string $id, array $parameters = [], ?string $domain = null, ?string $locale = null): string => $this->translator->trans($id, $parameters, $domain, $locale)
             : static fn ($m, $p) => strtr($m, $p);
 
         $parameters = ['{{ type }}' => implode('|', $exception->getExpectedTypes())];

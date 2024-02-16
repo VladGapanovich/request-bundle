@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Jrm\RequestBundle\Service;
 
 use ReflectionClass;
+use ReflectionMethod;
 use Throwable;
 
-final class InternalRequestValuesCollector
+final readonly class InternalRequestValuesCollector
 {
     public function __construct(
         private InternalItemResolver $internalItemResolver,
@@ -25,13 +26,13 @@ final class InternalRequestValuesCollector
         $class = new ReflectionClass($className);
         $constructor = $class->getConstructor();
 
-        if ($constructor !== null && count($constructor->getParameters()) > 0) {
+        if ($constructor instanceof ReflectionMethod && $constructor->getParameters() !== []) {
             $parameters = [];
 
             foreach ($constructor->getParameters() as $parameter) {
                 try {
                     $parameters[$parameter->getName()] = $this->internalItemResolver->resolveByParameter($data, $parameter);
-                } catch (\Throwable) {
+                } catch (Throwable) {
                 }
             }
 
@@ -43,7 +44,7 @@ final class InternalRequestValuesCollector
         foreach ($class->getProperties() as $property) {
             try {
                 $properties[$property->getName()] = $this->internalItemResolver->resolveByProperty($data, $property);
-            } catch (\Throwable) {
+            } catch (Throwable) {
             }
         }
 

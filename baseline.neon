@@ -1,0 +1,21 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot call method getName\\(\\) on ReflectionType\\|null\\.$#"
+			count: 1
+			path: src/Attribute/EmbeddableRequestResolver.php
+
+		-
+			message: "#^Cannot call method getName\\(\\) on ReflectionType\\|null\\.$#"
+			count: 1
+			path: src/Attribute/Internal/InternalEmbeddableRequestResolver.php
+
+		-
+			message: "#^Method Jrm\\\\RequestBundle\\\\Service\\\\RequestBodyGetter\\:\\:get\\(\\) should return array but returns array\\|null\\.$#"
+			count: 1
+			path: src/Service/RequestBodyGetter.php
+
+		-
+			message: "#^Parameter \\#2 \\$format of method Symfony\\\\Component\\\\Serializer\\\\Encoder\\\\DecoderInterface\\:\\:decode\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/RequestBodyGetter.php

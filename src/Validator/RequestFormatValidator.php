@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 final class RequestFormatValidator
 {
     /**
-     * @param string[] $acceptedFormats
+     * @param string[] $acceptedFormat
      */
     public function validate(Request $request, array|string|null $acceptedFormat = null): void
     {

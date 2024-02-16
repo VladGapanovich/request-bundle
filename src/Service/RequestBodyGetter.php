@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use WeakMap;
 
-final class RequestBodyGetter
+final readonly class RequestBodyGetter
 {
     /**
      * @var WeakMap<Request, array<array-key, mixed>>

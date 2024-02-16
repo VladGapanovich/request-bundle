@@ -15,7 +15,7 @@ use Throwable;
 /**
  * @internal
  */
-final class InternalCollectionResolver implements InternalValueResolver
+final readonly class InternalCollectionResolver implements InternalValueResolver
 {
     public function __construct(
         private InternalRequestValuesCollector $internalRequestValuesCollector,

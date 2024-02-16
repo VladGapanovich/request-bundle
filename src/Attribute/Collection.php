@@ -14,14 +14,14 @@ use LogicException;
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 final class Collection implements RequestAttribute, InternalRequestAttribute
 {
-    private Source $source;
-    private ?Path $path;
+    private readonly Source $source;
+    private readonly ?Path $path;
 
     /**
      * @param class-string $type
      */
     public function __construct(
-        private string $type,
+        private readonly string $type,
         string $source = Source::BODY,
         ?string $path = null,
     ) {

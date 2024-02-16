@@ -10,7 +10,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
 
-final class ItemFactory
+final readonly class ItemFactory
 {
     public function __construct(
         private InternalRequestAttributeResolver $internalRequestParameterAttributeResolver,

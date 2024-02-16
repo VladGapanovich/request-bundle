@@ -6,14 +6,15 @@ namespace Jrm\RequestBundle\Exception;
 
 use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Throwable;
 
 final class RequestValidationFailedException extends RuntimeException implements RequestBundleException
 {
     public function __construct(
-        private int $statusCode,
+        private readonly int $statusCode,
         string $message,
-        private ?ConstraintViolationList $violations = null,
-        ?\Throwable $previous = null,
+        private readonly ?ConstraintViolationList $violations = null,
+        ?Throwable $previous = null,
     ) {
         parent::__construct($message, 0, $previous);
     }
