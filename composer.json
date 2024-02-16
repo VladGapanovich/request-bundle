@@ -27,7 +27,10 @@
         "symfony/http-foundation": "^6.4 || 7.0",
         "symfony/http-kernel": "^6.4 || 7.0",
         "symfony/property-access": "^6.4 || 7.0",
-        "symfony/serializer": "^6.4 || 7.0"
+        "symfony/property-info": "^6.4|^7.0",
+        "symfony/serializer": "^6.4 || 7.0",
+        "symfony/validator": "^6.4 || 7.0",
+        "symfony/translation-contracts": "^3.4"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.6",
@@ -37,7 +40,6 @@
         "rector/rector": "^0.15",
         "phpunit/phpunit": "^10.1",
         "symfony/framework-bundle": "^6.4 || 7.0",
-        "symfony/validator": "^6.4 || 7.0",
         "symfony/translation": "^6.4 || 7.0",
         "roave/security-advisories": "dev-latest"
     },
@@ -54,17 +56,14 @@
         ],
         "lint": [
             "@composer validate",
-            "@composer-require:check",
-            "bin/console lint:container",
-            "bin/console debug:container --deprecations",
-            "bin/console debug:router"
+            "@composer-require:check"
         ],
         "phpunit": [
             "@phpunit:unit",
             "@phpunit:integration"
         ],
         "composer-require:check": [
-            "XDEBUG_MODE=off composer-require-checker check"
+            "XDEBUG_MODE=off composer-require-checker check --config-file='./composer-require-checker.json'"
         ],
         "phpstan": [
             "phpstan analyse --configuration='./phpstan.neon' --ansi --no-progress --memory-limit=3G"
