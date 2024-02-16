@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jrm\RequestBundle\Tests\Integration\ArgumentResolver;
 
+use Jrm\RequestBundle\ArgumentResolver\RequestResolver;
 use Jrm\RequestBundle\MapRequest;
 use Jrm\RequestBundle\Tests\Fixture\ComplicatedRequestStub;
 use Jrm\RequestBundle\Tests\Fixture\Image;
@@ -11,24 +12,21 @@ use Jrm\RequestBundle\Tests\Fixture\Ingredient;
 use Jrm\RequestBundle\Tests\Fixture\Product;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver\TraceableValueResolver;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**
- * @internal
- *
- * @coversDefaultClass \Jrm\RequestBundle\ArgumentResolver\RequestResolver
+ * @covers \Jrm\RequestBundle\ArgumentResolver\RequestResolver
  */
 final class RequestResolverTest extends KernelTestCase
 {
-    private TraceableValueResolver $sut;
+    private RequestResolver $sut;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $sut = self::getContainer()->get('jrm.request.argument_resolver.request_resolver');
-        assert($sut instanceof TraceableValueResolver);
+        assert($sut instanceof RequestResolver);
 
         $this->sut = $sut;
     }
