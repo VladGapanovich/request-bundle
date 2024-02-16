@@ -54,6 +54,11 @@ jobs:
                     key: "jrm-request-${{ matrix.php-version }}-symfony-${{ matrix.symfony-version }}-${{ matrix.dependencies }}"
                     restore-keys: "jrm-request-php-${{ matrix.php-version }}-symfony-${{ matrix.symfony-version }}-${{ matrix.dependencies }}"
 
+            -   name: Install Composer dependencies
+                uses: "ramsey/composer-install@v2"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
+
             -   name: Lint
                 run: "composer lint"
 
