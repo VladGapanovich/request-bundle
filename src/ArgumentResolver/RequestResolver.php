@@ -20,19 +20,16 @@ final readonly class RequestResolver implements ValueResolverInterface
     ) {
     }
 
-    public function supports(Request $request, ArgumentMetadata $argument): bool
-    {
-        $attributes = $argument->getAttributes(MapRequest::class, ArgumentMetadata::IS_INSTANCEOF);
-
-        return $attributes !== [];
-    }
-
     /**
-     * @return iterable<object>
+     * @return object[]
      */
-    public function resolve(Request $symfonyRequest, ArgumentMetadata $argument): iterable
+    public function resolve(Request $request, ArgumentMetadata $argument): array
     {
         $attributes = $argument->getAttributes(MapRequest::class, ArgumentMetadata::IS_INSTANCEOF);
+
+        if ($attributes === []) {
+            return [];
+        }
 
         /** @var MapRequest $attribute */
         $attribute = $attributes[0];
@@ -42,8 +39,8 @@ final readonly class RequestResolver implements ValueResolverInterface
             throw new UnsupportedTypeException($argument->getName(), MapRequest::class, 'class-string', $type);
         }
 
-        $requestData = $this->requestDataCollector->collect($type, $symfonyRequest);
+        $requestData = $this->requestDataCollector->collect($type, $request);
 
-        yield $this->requestFactory->create($attribute, $type, $requestData);
+        return [$this->requestFactory->create($attribute, $type, $requestData)];
     }
 }
