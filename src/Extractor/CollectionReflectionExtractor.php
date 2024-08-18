@@ -7,7 +7,10 @@ namespace Jrm\RequestBundle\Extractor;
 use Jrm\RequestBundle\Attribute\Collection;
 use ReflectionProperty;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
-use Symfony\Component\PropertyInfo\Type;
+use Symfony\Component\PropertyInfo\Type as LegacyType;
+use Symfony\Component\TypeInfo\Type;
+use Symfony\Component\TypeInfo\Type\ObjectType;
+use Symfony\Component\TypeInfo\TypeIdentifier;
 
 final readonly class CollectionReflectionExtractor implements PropertyTypeExtractorInterface
 {
@@ -19,13 +22,13 @@ final readonly class CollectionReflectionExtractor implements PropertyTypeExtrac
     /**
      * @param array<array-key, mixed> $context
      *
-     * @return Type[]|null
+     * @return LegacyType[]|null
      */
     public function getTypes(string $class, string $property, array $context = []): ?array
     {
         $types = $this->propertyTypeExtractor->getTypes($class, $property, $context);
 
-        if ($types === null || count($types) !== 1 || $types[0]->getBuiltinType() !== Type::BUILTIN_TYPE_ARRAY) {
+        if ($types === null || count($types) !== 1 || $types[0]->getBuiltinType() !== LegacyType::BUILTIN_TYPE_ARRAY) {
             return $types;
         }
 
@@ -36,13 +39,37 @@ final readonly class CollectionReflectionExtractor implements PropertyTypeExtrac
             return $types;
         }
 
-        return [new Type(
-            Type::BUILTIN_TYPE_ARRAY,
+        return [new LegacyType(
+            LegacyType::BUILTIN_TYPE_ARRAY,
             false,
             null,
             true,
-            new Type(Type::BUILTIN_TYPE_INT),
-            new Type(Type::BUILTIN_TYPE_OBJECT, false, $collectionAttributes[0]->newInstance()->type()),
+            new LegacyType(LegacyType::BUILTIN_TYPE_INT),
+            new LegacyType(LegacyType::BUILTIN_TYPE_OBJECT, false, $collectionAttributes[0]->newInstance()->type()),
         )];
+    }
+
+    /**
+     * @param array<array-key, mixed> $context
+     */
+    public function getType(string $class, string $property, array $context = []): ?Type
+    {
+        $type = $this->propertyTypeExtractor->getType($class, $property, $context);
+
+        if ($type?->isA(TypeIdentifier::ARRAY) !== true) {
+            return $type;
+        }
+
+        $reflectionProperty = new ReflectionProperty($class, $property);
+        $collectionAttributes = $reflectionProperty->getAttributes(Collection::class);
+
+        if ($collectionAttributes === []) {
+            return $type;
+        }
+
+        return Type::array(
+            new ObjectType($collectionAttributes[0]->newInstance()->type()),
+            Type::union(Type::int(), Type::string()),
+        );
     }
 }
