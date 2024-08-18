@@ -30,7 +30,8 @@
         "symfony/property-info": "^6.4|^7.0",
         "symfony/serializer": "^6.4 || ^7.0",
         "symfony/validator": "^6.4 || ^7.0",
-        "symfony/translation-contracts": "^3.4"
+        "symfony/translation-contracts": "^3.4",
+        "symfony/type-info": "^6.4 || ^7.0"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.6",
