@@ -56,7 +56,7 @@ final readonly class CollectionReflectionExtractor implements PropertyTypeExtrac
     {
         $type = $this->propertyTypeExtractor->getType($class, $property, $context);
 
-        if ($type?->isA(TypeIdentifier::ARRAY) !== true) {
+        if ($type?->isIdentifiedBy(TypeIdentifier::ARRAY) !== true) {
             return $type;
         }
 

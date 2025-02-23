@@ -11,6 +11,16 @@ parameters:
 			path: src/Attribute/Internal/InternalEmbeddableRequestResolver.php
 
 		-
+			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
+			count: 1
+			path: src/Model/Path.php
+
+		-
+			message: "#^Offset 'firstDot' on array\\{0\\: string, firstDot\\: '', 1\\: '', squareBrackets\\: '', 2\\: '', latDot\\: '\\.', 3\\: '\\.'\\}\\|array\\{0\\: string, firstDot\\: '', 1\\: '', squareBrackets\\: '\\['\\|'\\]', 2\\: '\\['\\|'\\]'\\}\\|array\\{0\\: string, firstDot\\: '\\.', 1\\: '\\.'\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Model/Path.php
+
+		-
 			message: "#^Parameter \\#2 \\$format of method Symfony\\\\Component\\\\Serializer\\\\Encoder\\\\DecoderInterface\\:\\:decode\\(\\) expects string, string\\|null given\\.$#"
 			count: 1
 			path: src/Service/RequestBodyGetter.php

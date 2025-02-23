@@ -36,7 +36,7 @@ final class ViolationFactory
                 throw new RuntimeException(sprintf('Invalid violation parameter name %s', $key));
             }
 
-            $name = $matches['name'];
+            $name = $matches['name'] ?? throw new RuntimeException(sprintf('Invalid violation parameter name %s', $key));
             $normalizedParameters[$name] = $parameter;
         }
 
