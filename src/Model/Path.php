@@ -22,7 +22,6 @@ final readonly class Path
                 isset($matches['latDot']) => 'The path does not have to end with a dot.',
                 isset($matches['squareBrackets']) => sprintf('Path should not contain square bracket at position %d.', strpos($this->value, $matches['squareBrackets'])),
                 isset($matches['firstDot']) => 'The path does not have to start with a dot.',
-                default => '',
             };
 
             throw new InvalidArgumentException(sprintf('Could not parse name "%s". %s', $this->value, $error));
