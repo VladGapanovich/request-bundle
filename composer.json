@@ -34,7 +34,7 @@
         "symfony/type-info": "^7.2"
     },
     "require-dev": {
-        "maglnet/composer-require-checker": "^4.6",
+        "maglnet/composer-require-checker": "^4.16",
         "friendsofphp/php-cs-fixer": "^3.16",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-phpunit": "^1.3",
